@@ -16,7 +16,9 @@ import plotly.graph_objects as go
 
 # Directories to search
 dirs = [r'Y:\Xfile\DMT102', r'Y:\Xfile\DMT103']
-patterns = ['*W525T8V0-8333-DMT103-TDJ591-DMTDUMMY.xml', '*5051IN009THK*.xml']
+# patterns = ['*W525T8V0-8333-DMT103-TDJ591-DMTDUMMY.xml', '*5051IN009THK*.xml']
+patterns = ['*2025-07-09T16.22.47.7943672-LN1720E038-8281-DMT102-TZH591-DMTDUMMY.xml', 
+            '2025-07-10T09.42.47.5955145-LN1718SS44-8333-DMT103-TZH591-DMTDUMMY.xml']
 
 # Get all files
 files = []
@@ -286,6 +288,86 @@ def make_files_table():
         table
     ])
 
+def make_statistical_summary_table():
+    """Create a statistical summary table showing mean and std dev for each WaferID"""
+    if df.empty:
+        return html.Div("No data available for statistical summary")
+    
+    # Get unique labels and wafer IDs
+    unique_labels = sorted(df['Label'].unique())
+    unique_wafers = sorted(df['WaferID'].unique())
+    
+    summary_data = []
+    
+    for wafer_id in unique_wafers:
+        wafer_data = df[df['WaferID'] == wafer_id]
+        
+        for label in unique_labels:
+            label_data = wafer_data[wafer_data['Label'] == label]['Datum']
+            
+            if not label_data.empty:
+                mean_val = label_data.mean()
+                std_val = label_data.std()
+                count_val = len(label_data)
+                
+                summary_data.append({
+                    'WaferID': wafer_id,
+                    'Measurement': label,
+                    'Mean': round(mean_val, 4),
+                    'Std Dev': round(std_val, 4),
+                    'Count': count_val,
+                    'Min': round(label_data.min(), 4),
+                    'Max': round(label_data.max(), 4)
+                })
+    
+    if not summary_data:
+        return html.Div("No statistical data to display")
+    
+    # Create the summary table using dash_table
+    summary_table = dash_table.DataTable(
+        data=summary_data,
+        columns=[
+            {"name": "Wafer ID", "id": "WaferID"},
+            {"name": "Measurement Type", "id": "Measurement"},
+            {"name": "Mean", "id": "Mean", "type": "numeric", "format": {"specifier": ".4f"}},
+            {"name": "Std Dev", "id": "Std Dev", "type": "numeric", "format": {"specifier": ".4f"}},
+            {"name": "Count", "id": "Count", "type": "numeric"},
+            {"name": "Min", "id": "Min", "type": "numeric", "format": {"specifier": ".4f"}},
+            {"name": "Max", "id": "Max", "type": "numeric", "format": {"specifier": ".4f"}}
+        ],
+        style_table={'overflowX': 'auto'},
+        style_cell={
+            'textAlign': 'center',
+            'padding': '8px',
+            'fontFamily': 'Arial',
+            'fontSize': '12px'
+        },
+        style_header={
+            'backgroundColor': 'rgb(230, 230, 230)',
+            'fontWeight': 'bold',
+            'textAlign': 'center'
+        },
+        style_data_conditional=[
+            {
+                'if': {'filter_query': '{Measurement} = "Layer 1 Thickness"'},
+                'backgroundColor': 'rgba(255, 182, 193, 0.2)',
+            },
+            {
+                'if': {'filter_query': '{Measurement} = "Goodness-of-Fit"'},
+                'backgroundColor': 'rgba(173, 216, 230, 0.2)',
+            }
+        ],
+        sort_action="native",
+        filter_action="native",
+        page_size=30
+    )
+    
+    return html.Div([
+        html.H3(f"Statistical Summary by WaferID ({len(unique_wafers)} wafers)"),
+        html.P("Mean and standard deviation for each measurement type by wafer"),
+        summary_table
+    ])
+
 app.layout = html.Div([
     html.H1("XML Data Analysis"),
     
@@ -315,8 +397,18 @@ app.layout = html.Div([
     
     html.Hr(),
     
+    html.H2("Statistical Summary"),
+    make_statistical_summary_table(),
+    
+    html.Hr(),
+    
     html.H2("Processed XML Files"),
-    make_files_table()
+    make_files_table(),
+    
+    html.Hr(),
+    
+    html.H2("Statistical Summary by WaferID"),
+    make_statistical_summary_table()
 ])
 
 if __name__ == '__main__':

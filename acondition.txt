@@ -1,0 +1,5 @@
+WaferID	        Condition
+FCCGB810MME7	No-Relax
+GCAMI776MMD3	Cast-2450rpm
+AIQCI621TMD4	Cast-2400rpm
+EM8PZ603JKC6	Cast-2550rpm
