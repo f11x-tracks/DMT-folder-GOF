@@ -16,9 +16,9 @@ import plotly.graph_objects as go
 
 # Directories to search
 dirs = [r'Y:\Xfile\DMT102', r'Y:\Xfile\DMT103']
-# patterns = ['*W525T8V0-8333-DMT103-TDJ591-DMTDUMMY.xml', '*5051IN009THK*.xml']
-patterns = ['*2025-07-09T16.22.47.7943672-LN1720E038-8281-DMT102-TZH591-DMTDUMMY.xml', 
-            '2025-07-10T09.42.47.5955145-LN1718SS44-8333-DMT103-TZH591-DMTDUMMY.xml']
+patterns = ['*2025-07-10T10.55.11.4384801-LN1720E040-8281-DMT103-TBH202-DMTDUMMY.xml']
+#patterns = ['*2025-07-09T16.22.47.7943672-LN1720E038-8281-DMT102-TZH591-DMTDUMMY.xml', 
+#            '2025-07-10T09.42.47.5955145-LN1718SS44-8333-DMT103-TZH591-DMTDUMMY.xml']
 
 # Get all files
 files = []
@@ -389,9 +389,6 @@ app.layout = html.Div([
     
     html.Hr(),
     
-    html.H2("Layer 1 Thickness by WaferID"),
-    make_wafer_plots('Layer 1 Thickness'),
-    
     html.H2("Goodness-of-Fit by WaferID"),
     make_wafer_plots('Goodness-of-Fit'),
     
@@ -403,12 +400,7 @@ app.layout = html.Div([
     html.Hr(),
     
     html.H2("Processed XML Files"),
-    make_files_table(),
-    
-    html.Hr(),
-    
-    html.H2("Statistical Summary by WaferID"),
-    make_statistical_summary_table()
+    make_files_table()
 ])
 
 if __name__ == '__main__':
